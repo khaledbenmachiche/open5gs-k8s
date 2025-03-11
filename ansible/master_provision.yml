@@ -1,18 +1,16 @@
----
 - name: Install MicroK8s on Ubuntu
   hosts: all
   become: true
-  vars:
-    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   tasks:
     - name: Ensure apt cache is up to date
       ansible.builtin.apt:
         update_cache: true
 
-    - name: Install snapd
+    - name: Install required packages
       ansible.builtin.apt:
-        name: snapd
+        name:
+          - snapd
         state: present
 
     - name: Install MicroK8s
@@ -29,7 +27,6 @@
 
     - name: Ensure MicroK8s is running
       ansible.builtin.command: microk8s status --wait-ready
-      register: microk8s_status
       changed_when: false
 
     - name: Wait for MicroK8s API to be available
@@ -39,63 +36,55 @@
       delay: 5
       until: api_check.rc == 0
 
-    - name: Ensure ~/.kube directory exists
-      ansible.builtin.file:
-        path: /home/vagrant/.kube
-        state: directory
-        owner: vagrant
-        group: vagrant
-        mode: '0755'
-
-    - name: Configure kubeconfig for vagrant user
+    - name: Copy kubeconfig for user
       ansible.builtin.command: microk8s config
       register: microk8s_config
       changed_when: false
 
-    - name: Copy kubeconfig to ~/.kube/config
+    - name: Ensure ~/.kube directory exists
+      ansible.builtin.file:
+        path: "/home/vagrant/.kube"
+        state: directory
+        owner: "vagrant"
+        group: "vagrant"
+        mode: '0755'
+
+    - name: Save kubeconfig
       ansible.builtin.copy:
         content: "{{ microk8s_config.stdout }}"
-        dest: /home/vagrant/.kube/config
-        owner: vagrant
-        group: vagrant
+        dest: "/home/vagrant/.kube/config"
+        owner: "vagrant"
+        group: "vagrant"
         mode: '0644'
 
-    - name: Ensure MicroK8s addons are enabled
-      ansible.builtin.shell: |
-        microk8s enable dns dashboard storage ingress
+    - name: Enable MicroK8s addons
+      ansible.builtin.shell: microk8s enable dns dashboard storage ingress
       args:
         executable: /bin/bash
       changed_when: false
 
-    - name: Verify addons are enabled
+    - name: Verify MicroK8s addons
       ansible.builtin.command: microk8s status
-      register: addon_check
       changed_when: false
 
-    - name: Add the Open5GS Helm repository
-      ansible.builtin.command: microk8s helm repo add adaptivenetlab https://adaptivenetlab.github.io/charts/
+    - name: Install Open5GS using Gradiant Helm chart
+      ansible.builtin.command: >
+        microk8s helm install open5gs oci://registry-1.docker.io/gradiant/open5gs
+        --version 2.2.0
+        --namespace open5gs
+        --create-namespace
+        --values https://gradiant.github.io/5g-charts/docs/open5gs-ueransim-gnb/5gSA-values.yaml
       changed_when: false
 
-    - name: Update Helm repositories
-      ansible.builtin.command: microk8s helm repo update
+    - name: Install UERANSIM gNodeB using Gradiant Helm chart
+      ansible.builtin.command: >
+        microk8s helm install ueransim-gnb oci://registry-1.docker.io/gradiant/ueransim-gnb
+        --version 0.2.6
+        --namespace open5gs
+        --create-namespace
+        --values https://gradiant.github.io/5g-charts/docs/open5gs-ueransim-gnb/gnb-ues-values.yaml
       changed_when: false
 
-    - name: Check if Open5GS namespace exists
-      ansible.builtin.command: microk8s kubectl get ns open5gs
-      register: namespace_check
-      failed_when: namespace_check.rc != 0 and "not found" not in namespace_check.stderr
-      changed_when: false
-
-    - name: Install Open5GS using Helm
-      ansible.builtin.command: microk8s helm install my-open5gs adaptivenetlab/open5gs -n open5gs
-      args:
-        creates: /var/snap/microk8s/current/helm/releases/my-open5gs
-
-    - name: Install ueransim using Helm
-      ansible.builtin.command: helm install ueransim adaptivenetlab/ueransim -n open5gs
-      args:
-        creates: /var/snap/microk8s/current/helm/releases/ueransim-gnb
-    
     - name: Check Open5GS deployment
       ansible.builtin.command: microk8s kubectl get pods -n open5gs
       changed_when: false

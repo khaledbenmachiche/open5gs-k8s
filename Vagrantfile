@@ -7,11 +7,13 @@ Vagrant.configure("2") do |config|
     master.vm.network "private_network", ip: MASTER_IPv4_ADDR, hostname: true
     master.vm.network "forwarded_port", guest: 3000, host: 8081
     master.vm.provider "virtualbox" do |vb|
-      vb.memory = "2048"
-      vb.cpus = 2
+      vb.memory = "4096"
+      vb.cpus = 4
     end
-    master.vm.provision "ansible" do |ansible|
-      ansible.playbook = "ansible/master_provision.yml"
+    master.vm.provision "chef_solo" do |chef|
+      chef.arguments = "--chef-license accept"
+      chef.cookbooks_path = "cookbooks"
+      chef.add_recipe "microk8s_master"
     end
   end
 
@@ -24,8 +26,10 @@ Vagrant.configure("2") do |config|
         vb.memory = "2048"
         vb.cpus = 2
       end
-      worker.vm.provision "ansible" do |ansible|
-        ansible.playbook = "ansible/worker_provision.yml"
+      worker.vm.provision "chef_solo" do |chef|
+        chef.arguments = "--chef-license accept"
+        chef.cookbooks_path = "cookbooks"
+        chef.add_recipe "microk8s_worker"
       end
     end
   end
