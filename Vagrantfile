@@ -7,6 +7,7 @@ Vagrant.configure("2") do |config|
     master.vm.network "private_network", ip: MASTER_IPv4_ADDR, hostname: true
     master.vm.network "forwarded_port", guest: 3000, host: 8081
     master.vm.provider "virtualbox" do |vb|
+      vb.linked_clone = true
       vb.memory = "4096"
       vb.cpus = 4
     end
@@ -23,6 +24,7 @@ Vagrant.configure("2") do |config|
       worker.vm.hostname = "microk8s-worker#{i}"
       worker.vm.network "private_network", type: "dhcp"
       worker.vm.provider "virtualbox" do |vb|
+        vb.linked_clone = true
         vb.memory = "2048"
         vb.cpus = 2
       end
