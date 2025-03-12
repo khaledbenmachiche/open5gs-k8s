@@ -70,7 +70,7 @@
     - name: Install Open5GS using Gradiant Helm chart
       ansible.builtin.command: >
         microk8s helm install open5gs oci://registry-1.docker.io/gradiant/open5gs
-        --version 2.2.0
+        --version 2.2.6
         --namespace open5gs
         --create-namespace
         --values https://gradiant.github.io/5g-charts/docs/open5gs-ueransim-gnb/5gSA-values.yaml

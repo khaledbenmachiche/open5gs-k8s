@@ -17,7 +17,6 @@ Vagrant.configure("2") do |config|
       ansible.install_mode = "pip"  
       ansible.version = "latest"
     end
-  
   end
 
   (1..2).each do |i|
@@ -32,9 +31,12 @@ Vagrant.configure("2") do |config|
       end
       worker.vm.provision "ansible_local" do |ansible|
         ansible.playbook = "ansible/worker_provision.yml"
-        ansible.install = true
         ansible.install_mode = "pip"  
         ansible.version = "latest"
+        ansible.install = true
+        ansible.extra_vars = {
+        "master_address" => MASTER_IPv4_ADDR,
+        }
       end
     end
   end

@@ -41,16 +41,18 @@
 
     - name: Get Kubernetes Join Command from Master
       ansible.builtin.command:
-        cmd: ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -i /vagrant/.vagrant/machines/master/virtualbox/private_key vagrant@192.168.56.10 "microk8s add-node --format short"
+        cmd: >
+          ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10
+          -i /vagrant/.vagrant/machines/master/virtualbox/private_key
+          vagrant@{{ master_address }} "microk8s add-node --format short"
       register: join_command
       changed_when: false
 
-    - name: Extract the join command with 192.168.56.10
+    - name: Extract the join command with {{ master_address }}
       ansible.builtin.set_fact:
-        join_cmd: "{{ join_command.stdout_lines | select('search', '192.168.56.10') | first }}"
+        join_cmd: "{{ join_command.stdout_lines | select('search', master_address) | first }}"
 
     - name: Execute Join Command on Worker
       ansible.builtin.command:
         cmd: "{{ join_cmd }}"
       changed_when: false
-      
