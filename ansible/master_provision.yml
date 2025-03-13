@@ -96,7 +96,7 @@
 
     - name: Install UERANSIM using Helm
       ansible.builtin.command: >
-       helm upgrade --install my-ueransim adaptivenetlab/ueransim
+       microk8s helm upgrade --install my-ueransim adaptivenetlab/ueransim
        --version 1.0.3
        --namespace open5gs
        --create-namespace
