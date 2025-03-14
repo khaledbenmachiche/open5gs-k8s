@@ -35,6 +35,7 @@
       retries: 10
       delay: 5
       until: api_check.rc == 0
+      changed_when: false
 
     - name: Copy kubeconfig for user
       ansible.builtin.command: microk8s config
@@ -76,14 +77,35 @@
       ansible.builtin.command: microk8s helm repo update
       changed_when: false
 
-    - name: Install Open5GS using Helm
+    - name: Download Open5GS values file inside the VM
+      ansible.builtin.get_url:
+        url: "https://gradiant.github.io/5g-charts/docs/open5gs-ueransim-gnb/5gSA-values.yaml"
+        dest: "/tmp/5gSA-values.yaml"
+        mode: '0644'
+
+    - name: Modify values file inside the VM (Add MongoDB section)
+      ansible.builtin.blockinfile:
+        path: "/tmp/5gSA-values.yaml"
+        block: |
+          mongodb:
+            livenessProbe:
+              initialDelaySeconds: 30
+              timeoutSeconds: 30
+            readinessProbe:
+              initialDelaySeconds: 30
+              timeoutSeconds: 30
+            startupProbe:
+              initialDelaySeconds: 60
+              timeoutSeconds: 10
+
+    - name: Install Open5GS using Gradiant Helm chart
       ansible.builtin.command: >
-       microk8s helm upgrade --install my-open5gs adaptivenetlab/open5gs
-       --version 1.0.3
-       --namespace open5gs
-       --create-namespace
-      args:
-        creates: /var/snap/microk8s/common/helm/repository/open5gs
+        microk8s helm install open5gs oci://registry-1.docker.io/gradiant/open5gs
+        --version 2.2.0
+        --namespace open5gs
+        --create-namespace
+        --values /tmp/5gSA-values.yaml
+      changed_when: false
 
     - name: Wait for Open5GS pods to be ready
       ansible.builtin.command: >
@@ -94,17 +116,13 @@
       delay: 10
       changed_when: false
 
-    - name: Install UERANSIM using Helm
+    - name: Install UERANSIM gNodeB using Gradiant Helm chart
       ansible.builtin.command: >
-       microk8s helm upgrade --install my-ueransim adaptivenetlab/ueransim
-       --version 1.0.3
-       --namespace open5gs
-       --create-namespace
-      args:
-        creates: /var/snap/microk8s/common/helm/repository/open5gs
-
-    - name: Check Open5gs NFV deployment
-      ansible.builtin.command: microk8s kubectl get pod -n open5gs
+        microk8s helm install ueransim-gnb oci://registry-1.docker.io/gradiant/ueransim-gnb
+        --version 0.2.6
+        --namespace open5gs
+        --create-namespace
+        --values https://gradiant.github.io/5g-charts/docs/open5gs-ueransim-gnb/gnb-ues-values.yaml
       changed_when: false
 
     - name: Check Open5GS deployment
