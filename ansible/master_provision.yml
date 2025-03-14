@@ -48,7 +48,7 @@
         state: directory
         owner: "vagrant"
         group: "vagrant"
-        mode: '0755'
+        mode: "0755"
 
     - name: Save kubeconfig
       ansible.builtin.copy:
@@ -56,7 +56,7 @@
         dest: "/home/vagrant/.kube/config"
         owner: "vagrant"
         group: "vagrant"
-        mode: '0644'
+        mode: "0644"
 
     - name: Enable MicroK8s addons
       ansible.builtin.shell: microk8s enable dns dashboard storage ingress
@@ -68,43 +68,13 @@
       ansible.builtin.command: microk8s status
       changed_when: false
 
-    - name: Add the Open5GS Helm repository
-      ansible.builtin.command: microk8s helm repo add adaptivenetlab https://adaptivenetlab.github.io/charts/
-      args:
-        creates: /var/snap/microk8s/common/helm/repository/adaptivenetlab-index.yaml
-
-    - name: Update Helm repositories
-      ansible.builtin.command: microk8s helm repo update
-      changed_when: false
-
-    - name: Download Open5GS values file inside the VM
-      ansible.builtin.get_url:
-        url: "https://gradiant.github.io/5g-charts/docs/open5gs-ueransim-gnb/5gSA-values.yaml"
-        dest: "/tmp/5gSA-values.yaml"
-        mode: '0644'
-
-    - name: Modify values file inside the VM (Add MongoDB section)
-      ansible.builtin.blockinfile:
-        path: "/tmp/5gSA-values.yaml"
-        block: |
-          mongodb:
-            livenessProbe:
-              initialDelaySeconds: 30
-              timeoutSeconds: 30
-            readinessProbe:
-              initialDelaySeconds: 30
-              timeoutSeconds: 30
-            startupProbe:
-              initialDelaySeconds: 60
-              timeoutSeconds: 10
-
     - name: Install Open5GS using Gradiant Helm chart
       ansible.builtin.command: >
-        microk8s helm install open5gs oci://registry-1.docker.io/gradiant/open5gs
+        microk8s helm upgrade --install open5gs oci://registry-1.docker.io/gradiant/open5gs
         --version 2.2.0
         --namespace open5gs
         --create-namespace
-        --values /tmp/5gSA-values.yaml
+        --values /vagrant/configs/open5gs-ueransim/5gSA-values.yaml
       changed_when: false
 
     - name: Wait for Open5GS pods to be ready
@@ -118,11 +88,11 @@
 
     - name: Install UERANSIM gNodeB using Gradiant Helm chart
       ansible.builtin.command: >
-        microk8s helm install ueransim-gnb oci://registry-1.docker.io/gradiant/ueransim-gnb
+        microk8s helm upgrade --install ueransim-gnb oci://registry-1.docker.io/gradiant/ueransim-gnb
         --version 0.2.6
         --namespace open5gs
         --create-namespace
-        --values https://gradiant.github.io/5g-charts/docs/open5gs-ueransim-gnb/gnb-ues-values.yaml
+        --values /vagrant/configs/open5gs-ueransim/gnb-ues-values.yaml
       changed_when: false
 
     - name: Check Open5GS deployment

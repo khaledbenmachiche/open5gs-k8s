@@ -1,0 +1,42 @@
+- name: Install Open5GS and UERANSIM on MicroK8s
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Adding roles to workers
+      ansible.builtin.command: >
+        microk8s kubectl label node worker1 role=ueransim
+        microk8s kubectl label node worker2 role=control_plane
+        microk8s kubectl label node worker2 role=data_plane
+      changed_when: false
+
+    - name: Install Open5GS using Gradiant Helm chart
+      ansible.builtin.command: >
+        microk8s helm upgrade --install open5gs oci://registry-1.docker.io/gradiant/open5gs
+        --version 2.2.0
+        --namespace open5gs
+        --create-namespace
+        --values /vagrant/configs/open5gs-ueransim/5gSA-values.yaml
+      changed_when: false
+
+    - name: Wait for Open5GS pods to be ready
+      ansible.builtin.command: >
+        microk8s kubectl wait --for=condition=Ready pod --all -n open5gs --timeout=300s
+      register: result
+      until: result.rc == 0
+      retries: 10
+      delay: 10
+      changed_when: false
+
+    - name: Install UERANSIM gNodeB using Gradiant Helm chart
+      ansible.builtin.command: >
+        microk8s helm upgrade --install ueransim-gnb oci://registry-1.docker.io/gradiant/ueransim-gnb
+        --version 0.2.6
+        --namespace open5gs
+        --create-namespace
+        --values /vagrant/configs/open5gs-ueransim/gnb-ues-values.yaml
+      changed_when: false
+
+    - name: Check Open5GS deployment
+      ansible.builtin.command: microk8s kubectl get pods -n open5gs
+      changed_when: false
