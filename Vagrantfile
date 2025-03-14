@@ -53,5 +53,4 @@ Vagrant.configure("2") do |config|
     trigger.info = "Executing final_provision.yml on master node"
     trigger.run = {inline: "vagrant ssh master -c 'ansible-playbook /vagrant/ansible/final_provision.yml'"}
   end
-
 end

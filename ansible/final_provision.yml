@@ -7,7 +7,7 @@
       ansible.builtin.command: >
         microk8s kubectl label node worker1 role=ueransim
         microk8s kubectl label node worker2 role=control_plane
-        microk8s kubectl label node worker2 role=data_plane
+        microk8s kubectl label node worker3 role=data_plane
       changed_when: false
 
     - name: Install Open5GS using Gradiant Helm chart
