@@ -1,15 +1,8 @@
 - name: Install Open5GS and UERANSIM on MicroK8s
-  hosts: all
+  hosts: localhost
   become: true
 
   tasks:
-    - name: Adding roles to workers
-      ansible.builtin.command: >
-        microk8s kubectl label node worker1 role=ueransim
-        microk8s kubectl label node worker2 role=control_plane
-        microk8s kubectl label node worker3 role=data_plane
-      changed_when: false
-
     - name: Install Open5GS using Gradiant Helm chart
       ansible.builtin.command: >
         microk8s helm upgrade --install open5gs oci://registry-1.docker.io/gradiant/open5gs
