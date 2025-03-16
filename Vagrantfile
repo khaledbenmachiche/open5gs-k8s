@@ -1,9 +1,9 @@
 MASTER_IPv4_ADDR = "192.168.56.10"
 
 WORKERS = [
-  { id: 1, memory: 2048, cpus: 2 },
-  { id: 2, memory: 4096, cpus: 2 },
-  { id: 3, memory: 2048, cpus: 2 }
+  { id: 1, memory: 2048, cpus: 2, role: "ueransim" },
+  { id: 2, memory: 4096, cpus: 2, role: "control_plane" },
+  { id: 3, memory: 2048, cpus: 2, role: "data_plane" }
 ]
 
 Vagrant.configure("2") do |config|
@@ -42,15 +42,21 @@ Vagrant.configure("2") do |config|
         ansible.version = "latest"
         ansible.install = true
         ansible.extra_vars = {
-          "master_address" => MASTER_IPv4_ADDR
+          "master_address" => MASTER_IPv4_ADDR,
+          "worker_role" => worker_config[:role],
+          "worker_hostname" => "microk8s-worker#{worker_config[:id]}"
         }
       end
-    end
-  end
 
-  config.trigger.after :machine_action_provision do |trigger|
-    trigger.name = "Run Ansible Playbook on Master"
-    trigger.info = "Executing final_provision.yml on master node"
-    trigger.run = {inline: "vagrant ssh master -c 'ansible-playbook /vagrant/ansible/final_provision.yml'"}
+      if worker_config[:id] == WORKERS.last[:id]
+        worker.vm.provision "shell", inline: <<-SHELL
+          echo "Final provisioning step on master node..."
+          ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 \
+          -i /vagrant/.vagrant/machines/master/virtualbox/private_key \
+          vagrant@#{MASTER_IPv4_ADDR} "ansible-playbook /vagrant/ansible/topology_provision.yml"
+        SHELL
+      end
+      
+    end
   end
 end
