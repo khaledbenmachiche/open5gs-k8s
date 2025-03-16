@@ -1,4 +1,3 @@
----
 - name: Join Worker Node to MicroK8s Cluster
   hosts: all
   become: true
@@ -39,31 +38,16 @@
         cmd: microk8s status --wait-ready
         creates: /var/snap/microk8s/current/var/lock/cni
 
-    - name: Check if worker is already joined to master
-      ansible.builtin.command:
-        cmd: "microk8s status"
-      register: microk8s_status
-      changed_when: false
-      failed_when: false
-
-    - name: Get node IP address
-      ansible.builtin.shell: 
-        cmd: "ip -4 addr show scope global | grep inet | awk '{print $2}' | cut -d/ -f1 | head -n 1"
-      register: node_ip
-      changed_when: false
-    
-    - name: Get hostname
-      ansible.builtin.command:
-        cmd: hostname
-      register: node_hostname
-      changed_when: false
+    - name: Set worker hostname from Vagrant
+      ansible.builtin.set_fact:
+        node_hostname: "{{ worker_hostname }}"
 
     - name: Check if node is already in the cluster
       ansible.builtin.command:
         cmd: >
           ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10
           -i /vagrant/.vagrant/machines/master/virtualbox/private_key
-          vagrant@{{ master_address }} "microk8s kubectl get nodes -o wide | grep {{ node_ip.stdout }}"
+          vagrant@{{ master_address }} "microk8s kubectl get nodes | grep {{ node_hostname }}"
       register: node_check
       changed_when: false
       failed_when: false
@@ -78,7 +62,7 @@
       changed_when: false
       when: node_check.rc != 0
 
-    - name: Extract the join command with {{ master_address }}
+    - name: Extract the join command
       ansible.builtin.set_fact:
         join_cmd: "{{ join_command.stdout_lines | select('search', master_address) | first }}"
       when: join_command is defined and join_command.stdout is defined and join_command.stdout != ""
@@ -93,10 +77,23 @@
         join_result.rc != 0 and
         'is already known to dqlite' not in join_result.stdout
     
+    - name: Wait for worker node to be Ready
+      ansible.builtin.command: >
+        ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10
+        -i /vagrant/.vagrant/machines/master/virtualbox/private_key
+        vagrant@{{ master_address }} "microk8s kubectl wait --for=condition=Ready node/{{ node_hostname }} --timeout=60s"
+      register: wait_result
+      until: wait_result.rc == 0
+      retries: 10
+      delay: 10
+      changed_when: false
+      failed_when: wait_result.rc != 0 and 'not found' not in wait_result.stderr
+
+
     - name: Label worker with appropriate role
       ansible.builtin.command:
         cmd: >
           ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10
           -i /vagrant/.vagrant/machines/master/virtualbox/private_key
-          vagrant@{{ master_address }} "microk8s kubectl label node {{ node_hostname.stdout }} role={{ worker_role }} --overwrite"
+          vagrant@{{ master_address }} "microk8s kubectl label node {{ node_hostname }} role={{ worker_role }} --overwrite"
       changed_when: false

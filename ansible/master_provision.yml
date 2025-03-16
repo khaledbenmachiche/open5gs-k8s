@@ -67,3 +67,7 @@
     - name: Verify MicroK8s addons
       ansible.builtin.command: microk8s status
       changed_when: false
+
+
+
+
