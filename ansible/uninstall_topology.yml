@@ -1,0 +1,35 @@
+- name: Uninstall Open5GS and UERANSIM from MicroK8s
+  hosts: localhost
+  become: true
+
+  tasks:
+    - name: Uninstall UERANSIM gNodeB
+      ansible.builtin.command: >
+        microk8s helm uninstall ueransim-gnb -n open5gs
+      changed_when: false
+      ignore_errors: true
+
+    - name: Find UPF deployments
+      ansible.builtin.find:
+        paths: "/vagrant/configs/open5gs-ueransim1"
+        patterns: "upf[1-9]*-values.yaml"
+      register: upf_files
+
+    - name: Uninstall UPFs
+      ansible.builtin.command: >
+        microk8s helm uninstall open5gs-{{ item.path | basename | regex_replace('-values.yaml$', '') }} -n open5gs
+      loop: "{{ upf_files.files }}"
+      changed_when: false
+      ignore_errors: true
+
+    - name: Uninstall Open5GS
+      ansible.builtin.command: >
+        microk8s helm uninstall open5gs -n open5gs
+      changed_when: false
+      ignore_errors: true
+
+    - name: Delete Open5GS namespace
+      ansible.builtin.command: >
+        microk8s kubectl delete namespace open5gs --ignore-not-found=true
+      changed_when: false
+      ignore_errors: true

@@ -11,6 +11,11 @@ smf:
   config:
     pcrf:
       enabled: false
+    upf:
+      pfcp:
+        hostnames:
+          - "open5gs-upf1-pfcp"
+          - "open5gs-upf2-pfcp"
   nodeSelector:
     role: control_plane
 
@@ -109,5 +114,6 @@ udr:
     role: control_plane
 
 upf:
+  enabled: false
   nodeSelector:
     role: data_plane
