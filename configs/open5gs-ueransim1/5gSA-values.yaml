@@ -14,8 +14,8 @@ smf:
     upf:
       pfcp:
         hostnames:
-          - "open5gs-upf1-pfcp"
-          - "open5gs-upf2-pfcp"
+          - open5gs-upf1-pfcp
+          - open5gs-upf2-pfcp
   nodeSelector:
     role: control_plane
 

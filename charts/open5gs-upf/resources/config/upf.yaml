@@ -14,6 +14,8 @@ upf:
     server:
     - dev: eth0
     client:
+      smf:
+        - address: {{ .Values.config.smf.address }}
   gtpu:
     server:
     - dev: {{ default "eth0" .Values.config.upf.gtpu.dev }}
@@ -43,7 +45,7 @@ upf:
 ################################################################################
 # GTP-U Server
 ################################################################################
-#  o Override SGW-U GTP-U address to be advertised inside S1AP messages 
+#  o Override SGW-U GTP-U address to be advertised inside S1AP messages
 #  gtpu:
 #    server:
 #      - dev: ens3

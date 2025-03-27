@@ -13,16 +13,18 @@ microk8s kubectl get nodes
 
 microk8s helm uninstall open5gs-upf1 -n open5gs
 microk8s helm uninstall open5gs-upf2 -n open5gs
-microk8s kubectl delete pod --all -n open5gs
 microk8s kubectl delete all --all -n open5gs
 
 microk8s kubectl get svc -n open5gs
 
 microk8s kubectl get cm -n open5gs
 microk8s kubectl describe cm -n open5gs <config-name>
+microk8s helm get manifest open5gs-upf1 -n open5gs
 
 microk8s helm dependency update
-
+          {{- range .Values.config.upf.pfcp.hostnames }}
+          - address: {{ . }}
+          {{- end }}
 
 
 Check gnodeb log with:

@@ -43,7 +43,7 @@
         --version 0.2.6
         --namespace open5gs
         --create-namespace
-        --values /vagrant/configs/open5gs-ueransim/gnb-ues-values.yaml
+        --values /vagrant/configs/open5gs-ueransim1/gnb-ues-values.yaml
       changed_when: false
 
     - name: Check Open5GS deployment

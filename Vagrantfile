@@ -12,7 +12,6 @@ Vagrant.configure("2") do |config|
     master.vm.hostname = "microk8s-master"
     master.vm.network "private_network", ip: MASTER_IPv4_ADDR, hostname: true
     master.vm.network "forwarded_port", guest: 3000, host: 8081
-    master.vm.synced_folder "configs/", "/configs"
     master.vm.provider "virtualbox" do |vb|
       vb.linked_clone = true
       vb.memory = "2048"
@@ -56,7 +55,7 @@ Vagrant.configure("2") do |config|
           vagrant@#{MASTER_IPv4_ADDR} "ansible-playbook /vagrant/ansible/topology_provision.yml"
         SHELL
       end
-      
+
     end
   end
 end
