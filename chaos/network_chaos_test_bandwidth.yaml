@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: upf-network-bandwidth
+  namespace: open5gs
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+      - open5gs
+    labelSelectors:
+      app.kubernetes.io/instance: open5gs-upf1
+  bandwidth:
+    rate: "1gbps"
+    limit: 10000000
+    buffer: 5000
