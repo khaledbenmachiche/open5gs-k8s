@@ -15,7 +15,7 @@ if [[ "$INPUT" =~ ^[0-9]+$ ]]; then
     NUM_INTERFACES=$INPUT
     INTERFACES=()
     for ((i=0; i<NUM_INTERFACES; i++)); do
-        INTERFACES+=("eth$i")
+        INTERFACES+=("uesimtun$i")
     done
 else
     IFS=',' read -ra INTERFACES <<< "$INPUT"
@@ -25,7 +25,7 @@ log "Interfaces to test: ${INTERFACES[*]}"
 
 for IFACE in "${INTERFACES[@]}"; do
     log "Running test on $IFACE"
-    ./single_iperf_test.sh "$IFACE"
+    bash /vagrant/shell/iperf_ue_script.sh "$IFACE" &
     log "Test completed for $IFACE"
 done
 

@@ -33,7 +33,7 @@ log "Adresse IP hôte: $HOSTONLY_IP"
 log "Lancement du test iperf3 client vers $HOSTONLY_IP..."
 # Remove -ti flags that are causing the "Bad file descriptor" error
 microk8s kubectl -n open5gs exec deployment/ueransim-gnb-ues -- \
-    iperf3 -c "$HOSTONLY_IP" -B "$CLIENT_IP" -t 10 || {
+    iperf3 -c "$HOSTONLY_IP" -B "$CLIENT_IP" -t 10 -P 10 || {
     log "Erreur: Échec du test iperf3 client."
     exit 1
 }
