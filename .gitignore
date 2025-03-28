@@ -5,4 +5,4 @@ charts/*/charts/
 *.tgz
 *.lock
 reports/
-outputs
+outputs/*
