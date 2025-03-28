@@ -94,3 +94,11 @@ helm install -n open5gs ueransim-ues gradiant/ueransim-ues --set gnb.hostname=ue
 
 ## Conclusion
 This setup enables a full Open5GS and UERANSIM environment in MicroK8s, allowing testing and development of 5G core and RAN functionalities.
+
+
+
+latence = ue -> gnb -> upf  ->  azure ... -> upf -> gnb -> ue
+ue -> gnb -> upf -> master -> upf -> gnb -> ue
+ue -> gnb -> upf -> worker1 -> upf -> gnb -> ue
+ue -> gnb -> upf -> worker3 -> upf -> gnb -> ue
+ue -> gnb -> upf -> UPF_X -> upf -> gnb -> ue
