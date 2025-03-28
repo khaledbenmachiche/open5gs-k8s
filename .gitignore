@@ -5,4 +5,3 @@ charts/*/charts/
 *.tgz
 *.lock
 reports/
-test
