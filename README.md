@@ -22,9 +22,12 @@ microk8s kubectl describe cm -n open5gs <config-name>
 microk8s helm get manifest open5gs-upf1 -n open5gs
 
 microk8s helm dependency update
+
           {{- range .Values.config.upf.pfcp.hostnames }}
           - address: {{ . }}
           {{- end }}
+
+iperf3 -c 10.1.33.11 -B $(ip -4 addr show uesimtun0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
 
 
 Check gnodeb log with:

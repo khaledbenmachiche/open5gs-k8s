@@ -14,6 +14,8 @@ upf:
     server:
     - dev: eth0
     client:
+      smf:
+        - address: {{.Values.config.smf.address}}
   gtpu:
     server:
     - dev: {{ default "eth0" .Values.config.upf.gtpu.dev }}

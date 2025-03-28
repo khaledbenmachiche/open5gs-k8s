@@ -5,7 +5,7 @@ def generate_upf_values_yaml(num_upfs):
     for i in range(1, num_upfs + 1):
         upf_data = {
             "nodeSelector": {"role": "data_plane"},
-            "config": {"pfcp": {"hostname": f"open5gs-upf{i}"}}
+            "config": {"pfcp": {"hostname": f"open5gs-upf{i}-pfcp", "address":"open5gs-smf-pfcp"}},
         }
         with open(f"upf{i}-values.yaml", "w") as file:
             yaml.dump(upf_data, file, default_flow_style=False)
@@ -15,11 +15,9 @@ def modify_5gsa_values_yaml(num_upfs, input_file="5gSA-values.yaml", output_file
     with open(input_file, "r") as file:
         data = yaml.safe_load(file)
 
-    # Update smf.config.upf.pfcp.hostnames
     upf_hostnames = [f"open5gs-upf{i}-pfcp" for i in range(1, num_upfs + 1)]
     data["smf"]["config"]["upf"]["pfcp"]["hostnames"] = upf_hostnames
 
-    # Write back to file
     with open(output_file, "w") as file:
         yaml.dump(data, file, default_flow_style=False)
     print(f"Modified 5gSA-values.yaml with {num_upfs} UPFs and saved as {output_file}.")

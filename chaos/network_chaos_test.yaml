@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: upf-network-delay
+  namespace: open5gs
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+      - open5gs
+    labelSelectors:
+      app.kubernetes.io/instance: open5gs-upf1
+  delay:
+    latency: "20ms"
+  duration: "12s"

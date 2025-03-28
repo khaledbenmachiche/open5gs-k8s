@@ -1,6 +1,7 @@
 nodeSelector:
   role: data_plane
 config:
+  logLevel: debug
   smf:
     pfcp:
       hostname: "open5gs-upf1-pfcp"
