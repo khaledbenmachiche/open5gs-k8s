@@ -1,6 +1,5 @@
 .ansible
 .vagrant
 .ropeproject
-charts/*/charts/
 reports/
 outputs/*
