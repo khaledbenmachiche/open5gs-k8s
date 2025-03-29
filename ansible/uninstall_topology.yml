@@ -3,9 +3,16 @@
   become: true
 
   tasks:
-    - name: Uninstall UERANSIM gNodeB
+    - name: Find UERANSIM gNB deployments
+      ansible.builtin.find:
+        paths: "/vagrant/configs/open5gs-ueransim1"
+        patterns: "ueransim-gnb*.yaml"
+      register: gnb_files
+
+    - name: Uninstall UERANSIM gNBs
       ansible.builtin.command: >
-        microk8s helm uninstall ueransim-gnb -n open5gs
+        microk8s helm uninstall ueransim-{{ item.path | basename | regex_replace('ueransim-gnb', 'gnb') | regex_replace('.yaml$', '') }} -n open5gs
+      loop: "{{ gnb_files.files }}"
       changed_when: false
       ignore_errors: true
 

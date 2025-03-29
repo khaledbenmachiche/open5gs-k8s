@@ -37,13 +37,20 @@
       delay: 10
       changed_when: false
 
-    - name: Install UERANSIM gNodeB using Gradiant Helm chart
+    - name: Find UERANSIM gNB config files
+      ansible.builtin.find:
+        paths: "/vagrant/configs/open5gs-ueransim1"
+        patterns: "ueransim-gnb*.yaml"
+      register: gnb_files
+
+    - name: Deploy UERANSIM gNBs
       ansible.builtin.command: >
-        microk8s helm upgrade --install ueransim-gnb oci://registry-1.docker.io/gradiant/ueransim-gnb
+        microk8s helm upgrade --install ueransim-{{ item.path | basename | regex_replace('ueransim-gnb', 'gnb') | regex_replace('.yaml$', '') }} oci://registry-1.docker.io/gradiant/ueransim-gnb
         --version 0.2.6
         --namespace open5gs
         --create-namespace
-        --values /vagrant/configs/open5gs-ueransim1/gnb-ues-values.yaml
+        --values {{ item.path }}
+      loop: "{{ gnb_files.files }}"
       changed_when: false
 
     - name: Check Open5GS deployment
