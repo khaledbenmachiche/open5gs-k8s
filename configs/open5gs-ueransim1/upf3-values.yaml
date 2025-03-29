@@ -7,3 +7,6 @@ config:
       hostname: "open5gs-upf3-pfcp"
       port: 8805
     address: "open5gs-smf-pfcp"
+
+metrics:
+  enabled: true

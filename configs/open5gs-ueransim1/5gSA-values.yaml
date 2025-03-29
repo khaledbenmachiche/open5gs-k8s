@@ -18,6 +18,8 @@ smf:
           - open5gs-upf2-pfcp
   nodeSelector:
     role: control_plane
+  metrics:
+    enabled: true
 
 sgwc:
   enabled: false
@@ -48,6 +50,8 @@ amf:
             sd: "0x111111"
   nodeSelector:
     role: control_plane
+  metrics:
+    enabled: true
 
 nssf:
   config:

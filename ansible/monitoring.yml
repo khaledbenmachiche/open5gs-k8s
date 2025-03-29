@@ -1,0 +1,67 @@
+---
+- name: Deploy Open5GS, Prometheus, and Grafana on MicroK8s
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    # Add the Prometheus Helm chart repo
+    - name: Add Prometheus Helm chart repo
+      command: microk8s helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+      register: helm_add_prometheus_repo
+      failed_when: false
+
+    # Update Prometheus Helm repo
+    - name: Update Prometheus repo
+      command: microk8s helm repo update
+      when: helm_add_prometheus_repo.changed
+
+    # Install Prometheus using the Helm chart
+    - name: Install Prometheus
+      command:
+        microk8s helm upgrade --install prometheus prometheus-community/prometheus \
+        --create-namespace \
+        --namespace monitoring \
+        --values /vagrant/configs/monitoring/prometheus_values.yaml
+      register: prometheus_install
+      failed_when: false
+
+    # Add the Grafana Helm chart repo
+    - name: Add Grafana Helm chart repo
+      command: microk8s helm repo add grafana https://grafana.github.io/helm-charts
+      register: helm_add_grafana_repo
+      failed_when: false
+
+    # Update Grafana Helm repo
+    - name: Update Grafana repo
+      command: microk8s helm repo update
+      when: helm_add_grafana_repo.changed
+
+    # Install Grafana using the Helm chart
+    - name: Install Grafana
+      command: microk8s helm upgrade --install grafana grafana/grafana \
+        --create-namespace \
+        --namespace monitoring \
+        --values /vagrant/configs/monitoring/grafana_values.yaml
+      register: grafana_install
+      failed_when: false
+
+    # Expose Prometheus and Grafana via kubectl port-forward for easy access
+    - name: Port forward Prometheus and Grafana
+      shell: |
+        microk8s kubectl port-forward svc/prometheus-server -n monitoring 9090:80 &
+        microk8s kubectl port-forward svc/grafana -n monitoring 3000:80 &
+      async: 1
+      poll: 0
+
+    # Ensure that Prometheus is running
+    - name: Wait for Prometheus service to be up
+      wait_for:
+        host: localhost
+        port: 9090
+        timeout: 300
+
+    # Ensure Grafana is running
+    - name: Wait for Grafana service to be up
+      wait_for:
+        host: localhost
+        port: 3000
+        timeout: 300
