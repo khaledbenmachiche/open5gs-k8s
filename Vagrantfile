@@ -14,18 +14,18 @@ Vagrant.configure("2") do |config|
     master.vm.network "forwarded_port", guest: 3000, host: 8081
     master.vm.provider "virtualbox" do |vb|
       vb.linked_clone = true
-      vb.memory = "3072"
+      vb.memory = "2048"
       vb.cpus = 2
     end
     master.vm.provision "ansible_local" do |ansible|
-      ansible.playbook = "ansible/master_provision.yml"
+      ansible.playbook = "scripts/ansible/provisions/master_provision.yml"
       ansible.install = true
       ansible.install_mode = "pip"
       ansible.version = "latest"
     end
   end
 
-  WORKERS.each do |worker_config|
+  WORKERS.each do |workVagrantfileer_config|
     config.vm.define "worker#{worker_config[:id]}" do |worker|
       worker.vm.box = "ubuntu/jammy64"
       worker.vm.hostname = "microk8s-worker#{worker_config[:id]}"
@@ -36,7 +36,7 @@ Vagrant.configure("2") do |config|
         vb.cpus = worker_config[:cpus]
       end
       worker.vm.provision "ansible_local" do |ansible|
-        ansible.playbook = "ansible/worker_provision.yml"
+        ansible.playbook = "scripts/ansible/provisions/worker_provision.yml"
         ansible.install_mode = "pip"
         ansible.version = "latest"
         ansible.install = true
@@ -52,7 +52,7 @@ Vagrant.configure("2") do |config|
           echo "Final provisioning step on master node..."
           ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 \
           -i /vagrant/.vagrant/machines/master/virtualbox/private_key \
-          vagrant@#{MASTER_IPv4_ADDR} "ansible-playbook /vagrant/ansible/topology_provision.yml && ansible-playbook /vagrant/ansible/chaos.yml"
+          vagrant@#{MASTER_IPv4_ADDR} "ansible-playbook /vagrant/scripts/ansible/topologies/test/topology1_provision.yml && ansible-playbook /vagrant/scripts/ansible/setups/chaos_setup.yml"
         SHELL
       end
 
