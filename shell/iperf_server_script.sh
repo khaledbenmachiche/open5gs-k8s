@@ -18,7 +18,7 @@ fi
 log "Démarrage du serveur iperf3..."
 if [[ -n "$LOG_FILE" ]]; then
     # Redirect stdout and stderr to both terminal and log file
-    iperf3 -s 2>&1 | tee "$LOG_FILE" &
+    iperf3 -s --json --logfile "$LOG_FILE" &
 else
     # Print only to terminal
     iperf3 -s &

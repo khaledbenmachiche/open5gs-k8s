@@ -107,5 +107,7 @@ Run the script with a number, and it will generate eth0, eth1, ..., eth<N-1>:
 ```
 This will test eth0, eth1, eth2, eth3.
 
-## Conclusion
-This setup enables a full Open5GS and UERANSIM environment in MicroK8s, allowing testing and development of 5G core and RAN functionalities.
+microk8s kubectl get networkchaos -n open5gs
+
+kubectl apply -f upf-network-delay.yaml
+microk8s kubectl delete networkchaos upf-network-delay -n open5gs

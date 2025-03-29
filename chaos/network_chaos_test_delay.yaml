@@ -13,5 +13,5 @@ spec:
       app.kubernetes.io/instance: open5gs-upf1
   delay:
     latency: "20ms"
-    correlation: 100
+    correlation: "100"
     jitter: "5ms"
