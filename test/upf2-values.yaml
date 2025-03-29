@@ -1,5 +1,0 @@
-config:
-  pfcp:
-    hostname: open5gs-upf2
-nodeSelector:
-  role: data_plane

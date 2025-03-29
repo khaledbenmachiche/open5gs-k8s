@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
     master.vm.network "forwarded_port", guest: 3000, host: 8081
     master.vm.provider "virtualbox" do |vb|
       vb.linked_clone = true
-      vb.memory = "2048"
+      vb.memory = "3072"
       vb.cpus = 2
     end
     master.vm.provision "ansible_local" do |ansible|

@@ -111,3 +111,36 @@ microk8s kubectl get networkchaos -n open5gs
 
 kubectl apply -f upf-network-delay.yaml
 microk8s kubectl delete networkchaos upf-network-delay -n open5gs
+
+
+vagrant@microk8s-master:~$ microk8s helm upgrade --install grafana grafana/grafana   --create-namespace   --namespace monitoring   --values /vagrant/configs/monitoring/grafana_values.yaml
+Release "grafana" does not exist. Installing it now.
+NAME: grafana
+LAST DEPLOYED: Sat Mar 29 19:47:45 2025
+NAMESPACE: monitoring
+STATUS: deployed
+REVISION: 1
+NOTES:
+1. Get your 'admin' user password by running:
+
+   kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+
+
+2. The Grafana server can be accessed via port 80 on the following DNS name from within your cluster:
+
+   grafana.monitoring.svc.cluster.local
+
+   Get the Grafana URL to visit by running these commands in the same shell:
+     export POD_NAME=$(kubectl get pods --namespace monitoring -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=grafana" -o jsonpath="{.items[0].metadata.name}")
+     kubectl --namespace monitoring port-forward $POD_NAME 3000
+
+3. Login with the password from step 1 and the username: admin
+#################################################################################
+######   WARNING: Persistence is disabled!!! You will lose your data when   #####
+######            the Grafana pod is terminated.                            #####
+#################################################################################
+
+
+vagrant@microk8s-master:~$ microk8s kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+e9UJiOWAXCVwT4OihRzKlD8VKmFNxlcNLJqJAvaa
+
