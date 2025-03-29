@@ -3,11 +3,6 @@
   become: true
 
   tasks:
-    - name: Update Helm dependencies for Open5GS
-      ansible.builtin.command: >
-        microk8s helm dependency update /vagrant/charts/open5gs
-      changed_when: false
-
     - name: Install Open5GS using Gradiant Helm chart
       ansible.builtin.command: >
         microk8s helm upgrade
@@ -22,11 +17,6 @@
         paths: "/vagrant/configs/open5gs-ueransim1"
         patterns: "upf[1-9]*-values.yaml"
       register: upf_files
-
-    - name: Update Helm dependencies for Open5GS UPF
-      ansible.builtin.command: >
-        microk8s helm dependency update /vagrant/charts/open5gs-upf
-      changed_when: false
 
     - name: Deploy UPFs
       ansible.builtin.command: >
