@@ -25,7 +25,7 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  WORKERS.each do |workVagrantfileer_config|
+  WORKERS.each do |worker_config|
     config.vm.define "worker#{worker_config[:id]}" do |worker|
       worker.vm.box = "ubuntu/jammy64"
       worker.vm.hostname = "microk8s-worker#{worker_config[:id]}"
