@@ -1,0 +1,104 @@
+- name: Deploy Open5GS, Prometheus, and Grafana on MicroK8s
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    # Add the Prometheus Helm chart repo
+    - name: Add Prometheus Helm chart repo
+      command: microk8s helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+      register: helm_add_prometheus_repo
+      failed_when: false
+
+    # Update Prometheus Helm repo
+    - name: Update Prometheus repo
+      command: microk8s helm repo update
+      when: helm_add_prometheus_repo.changed
+
+    # Install Prometheus using the Helm chart
+    - name: Install Prometheus
+      command: microk8s helm upgrade --install prometheus prometheus-community/prometheus \
+        --create-namespace \
+        --namespace monitoring \
+        --values /vagrant/configs/monitoring/prometheus_values.yaml
+      register: prometheus_install
+      failed_when: false
+
+    # Add the Grafana Helm chart repo
+    - name: Add Grafana Helm chart repo
+      command: microk8s helm repo add grafana https://grafana.github.io/helm-charts
+      register: helm_add_grafana_repo
+      failed_when: false
+
+    # Update Grafana Helm repo
+    - name: Update Grafana repo
+      command: microk8s helm repo update
+      when: helm_add_grafana_repo.changed
+
+    # Install Grafana using the Helm chart
+    - name: Install Grafana
+      command: microk8s helm upgrade --install grafana grafana/grafana \
+        --create-namespace \
+        --namespace monitoring \
+        --values /vagrant/configs/monitoring/grafana_values.yaml
+      register: grafana_install
+      failed_when: false
+
+    # Wait for Grafana pod to be ready
+    - name: Wait for Grafana pod to be ready
+      shell: |
+        microk8s kubectl wait --namespace monitoring \
+        --for=condition=ready pod \
+        --selector=app.kubernetes.io/name=grafana \
+        --timeout=300s
+
+    # Get Grafana Admin Password
+    - name: Retrieve Grafana admin password
+      shell: microk8s kubectl get secret -n monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode
+      register: grafana_admin_password
+
+    # Print Grafana Admin Password
+    - name: Show Grafana Admin Password
+      debug:
+        msg: "Grafana Admin Password: {{ grafana_admin_password.stdout }}"
+
+    # Save Grafana Password to a File
+    - name: Save Grafana Admin Password to a file
+      copy:
+        content: "{{ grafana_admin_password.stdout }}"
+        dest: "/vagrant/grafana_admin_password.txt"
+        mode: '0600'
+
+    # Get Grafana Pod Name
+    - name: Get Grafana pod name
+      shell: microk8s kubectl get pods --namespace monitoring -l "app.kubernetes.io/name=grafana" -o jsonpath="{.items[0].metadata.name}"
+      register: grafana_pod
+
+    # Port-forward Grafana (Bind to 0.0.0.0 for External Access)
+    - name: Port forward Grafana
+      shell: "nohup microk8s kubectl --namespace monitoring port-forward {{ grafana_pod.stdout }} 3000:3000 --address 0.0.0.0 > /dev/null 2>&1 &"
+      async: 1
+      poll: 0
+
+    # Get Prometheus Pod Name
+    - name: Get Prometheus pod name
+      shell: microk8s kubectl get pods --namespace monitoring -l "app.kubernetes.io/name=prometheus" -o jsonpath="{.items[0].metadata.name}"
+      register: prometheus_pod
+
+    # Port-forward Prometheus (Bind to 0.0.0.0 for External Access)
+    - name: Port forward Prometheus
+      shell: "nohup microk8s kubectl --namespace monitoring port-forward {{ prometheus_pod.stdout }} 9090:9090 --address 0.0.0.0 > /dev/null 2>&1 &"
+      async: 1
+      poll: 0
+
+    # Ensure that Prometheus is running
+    - name: Wait for Prometheus service to be up
+      wait_for:
+        host: 0.0.0.0
+        port: 9090
+        timeout: 300
+
+    # Ensure Grafana is running
+    - name: Wait for Grafana service to be up
+      wait_for:
+        host: 0.0.0.0
+        port: 3000
+        timeout: 300

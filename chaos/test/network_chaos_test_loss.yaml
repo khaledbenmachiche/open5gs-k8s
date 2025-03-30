@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: upf-network-loss
+  namespace: open5gs
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+      - open5gs
+    labelSelectors:
+      app.kubernetes.io/instance: open5gs-upf1
+  loss:
+    loss: "0.1"
+    correlation: "50"

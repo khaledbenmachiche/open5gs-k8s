@@ -1,0 +1,23 @@
+amf:
+  hostname: open5gs-amf-ngap
+mcc: '999'
+mnc: '70'
+name: ueransim-gnb2
+nodeSelector:
+  role: ueransim
+sd: '0x222222'
+sst: 2
+tac: '0002'
+ues:
+  apnList:
+  - apn: internet
+    emergency: false
+    slice:
+      sd: '0x222222'
+      sst: 2
+    type: IPv4
+  count: 2
+  enabled: true
+  initialMSISDN: '0000000003'
+  nodeSelector:
+    role: ueransim

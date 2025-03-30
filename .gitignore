@@ -1,3 +1,5 @@
 .ansible
 .vagrant
-
+.ropeproject
+reports/
+outputs/*
