@@ -1,0 +1,42 @@
+dependencies:
+- name: common
+  repository: https://charts.bitnami.com/bitnami
+  version: 1.17.1
+- name: mongodb
+  repository: https://charts.bitnami.com/bitnami
+  version: 12.1.31
+- name: free5gc-amf
+  repository: file://../free5gc-amf
+  version: 0.1.2
+- name: free5gc-ausf
+  repository: file://../free5gc-ausf
+  version: 0.1.2
+- name: free5gc-chf
+  repository: file://../free5gc-chf
+  version: 0.1.2
+- name: free5gc-nrf
+  repository: file://../free5gc-nrf
+  version: 0.1.2
+- name: free5gc-nssf
+  repository: file://../free5gc-nssf
+  version: 0.1.2
+- name: free5gc-pcf
+  repository: file://../free5gc-pcf
+  version: 0.1.2
+- name: free5gc-smf
+  repository: file://../free5gc-smf
+  version: 0.1.2
+- name: free5gc-udm
+  repository: file://../free5gc-udm
+  version: 0.1.2
+- name: free5gc-udr
+  repository: file://../free5gc-udr
+  version: 0.1.2
+- name: free5gc-upf
+  repository: file://../free5gc-upf
+  version: 0.1.2
+- name: free5gc-webui
+  repository: file://../free5gc-webui
+  version: 0.1.2
+digest: sha256:7161439a9f10f336a7210dcbb2d164519beb6e99ca57f596e6a069dd8a834de1
+generated: "2025-04-16T22:28:51.231893378+01:00"
