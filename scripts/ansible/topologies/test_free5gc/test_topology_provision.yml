@@ -1,0 +1,74 @@
+---
+- name: Setup free5GC with GTP5G and Docker
+  hosts: localhost
+  become: yes
+  vars:
+    free5gc_dir: /opt/free5gc-compose
+    gtp5g_dir: /opt/gtp5g
+
+  tasks:
+    - name: Install required base packages
+      apt:
+        name:
+          - git
+          - build-essential
+          - curl
+        update_cache: yes
+        state: present
+
+    - name: Download Docker install script
+      get_url:
+        url: https://get.docker.com
+        dest: /tmp/get-docker.sh
+        mode: "0755"
+
+    - name: Run Docker install script
+      command: sh /tmp/get-docker.sh
+      args:
+        creates: /usr/bin/docker
+
+    - name: Enable and start Docker service
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Clone GTP5G repository
+      git:
+        repo: https://github.com/free5gc/gtp5g.git
+        dest: "{{ gtp5g_dir }}"
+        update: no
+
+    - name: Build and install GTP5G kernel module
+      shell: |
+        make
+        make install
+      args:
+        chdir: "{{ gtp5g_dir }}"
+
+    - name: Load GTP5G kernel module
+      shell: modprobe gtp5g
+      register: modprobe_result
+      changed_when: false
+      failed_when: modprobe_result.rc != 0
+
+    - name: Confirm GTP5G module is loaded
+      shell: lsmod | grep gtp5g
+      register: lsmod_check
+      failed_when: lsmod_check.stdout == ""
+
+    - name: Clone free5gc-compose repository
+      git:
+        repo: https://github.com/free5gc/free5gc-compose
+        dest: "{{ free5gc_dir }}"
+        update: yes
+
+    - name: Run free5GC using Docker Compose
+      shell: docker compose -f docker-compose-ulcl.yaml up -d
+      args:
+        chdir: "{{ free5gc_dir }}"
+
+  handlers:
+    - name: Add restart always if missing
+      debug:
+        msg: "Updated restart policy in docker-compose-ulcl.yaml"

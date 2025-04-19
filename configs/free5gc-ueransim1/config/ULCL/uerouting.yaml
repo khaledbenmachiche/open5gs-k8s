@@ -1,0 +1,81 @@
+info:
+  version: 1.0.7
+  description: Routing information for UE
+ueRoutingInfo:
+  UE1:
+    members:
+      - imsi-208930000000001
+    topology:
+      - A: gNB1
+        B: UPF1
+      - A: UPF1
+        B: UPF4
+    specificPath:
+      - dest: 1.0.0.1/32
+        path: [UPF1]
+  UE2:
+    members:
+      - imsi-208930000000002
+    topology:
+      - A: gNB1
+        B: UPF2
+    specificPath:
+      - dest: 2.0.0.1/32
+        path: [UPF2]
+  UE3:
+    members:
+      - imsi-208930000000003
+      - imsi-208930000000004
+    topology:
+      - A: gNB1
+        B: UPF3
+    specificPath:
+      - dest: 3.0.0.1/32
+        path: [UPF3]
+  UE4:
+    members:
+      - imsi-208930000000005
+    topology:
+      - A: gNB1
+        B: UPF1
+      - A: UPF1
+        B: UPF4
+    specificPath: []
+  UE5:
+    members:
+      - imsi-208930000000006
+      - imsi-208930000000007
+      - imsi-208930000000008
+    topology:
+      - A: gNB1
+        B: UPF5
+    specificPath:
+      - dest: 5.0.0.1/32
+        path: [UPF5]
+
+pfdDataForApp:
+  - applicationId: app1
+    pfds:
+      - pfdID: pfd1
+        flowDescriptions:
+          - permit out ip from 1.0.0.1/32 to 10.60.0.0/24
+  - applicationId: app2
+    pfds:
+      - pfdID: pfd2
+        flowDescriptions:
+          - permit out ip from 2.0.0.1/32 to 10.62.0.0/24
+  - applicationId: app3
+    pfds:
+      - pfdID: pfd3
+        flowDescriptions:
+          - permit out ip from 3.0.0.1/32 to 10.64.0.0/24
+  - applicationId: app4
+    pfds:
+      - pfdID: pfd4
+        flowDescriptions:
+          - permit out ip from 4.0.0.1/32 to 10.65.0.0/24
+  - applicationId: enterprise_app
+    pfds:
+      - pfdID: pfd5
+        flowDescriptions:
+          - permit out ip from 5.0.0.1/32 to 10.67.0.0/24

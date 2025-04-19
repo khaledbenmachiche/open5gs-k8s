@@ -3,3 +3,5 @@
 .ropeproject
 reports/
 outputs/*
+gtp5g*
+free5gc-helm

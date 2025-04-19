@@ -1,0 +1,19 @@
+version: 1.0.3
+description: UPF4 initial local configuration
+pfcp:
+  addr: upf4.free5gc.org
+  nodeID: upf4.free5gc.org
+  retransTimeout: 1s
+  maxRetrans: 3
+gtpu:
+  forwarder: gtp5g
+  ifList:
+    - addr: upf4.free5gc.org
+      type: N9
+dnnList:
+  - dnn: ims
+    cidr: 10.65.0.0/24
+logger:
+  enable: true
+  level: info
+  reportCaller: false

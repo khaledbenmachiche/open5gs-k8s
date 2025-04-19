@@ -30,6 +30,7 @@ Vagrant.configure("2") do |config|
       worker.vm.box = "ubuntu/jammy64"
       worker.vm.hostname = "microk8s-worker#{worker_config[:id]}"
       worker.vm.network "private_network", type: "dhcp"
+      worker.vm.network "forwarded_port", guest: 5000, host: 8081 + worker_config[:id]
       worker.vm.provider "virtualbox" do |vb|
         vb.linked_clone = true
         vb.memory = worker_config[:memory].to_s
