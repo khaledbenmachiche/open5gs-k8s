@@ -14,9 +14,9 @@ gtpu:
       type: N9
 dnnList:
   - dnn: internet
-    cidr: 10.66.0.0/24
+    cidr: 10.66.0.0/16
   - dnn: enterprise
-    cidr: 10.67.0.0/24
+    cidr: 10.67.0.0/16
 logger:
   enable: true
   level: info

@@ -12,7 +12,7 @@ gtpu:
       type: N3
 dnnList:
   - dnn: internet
-    cidr: 10.64.0.0/24
+    cidr: 10.64.0.0/16
 logger:
   enable: true
   level: info

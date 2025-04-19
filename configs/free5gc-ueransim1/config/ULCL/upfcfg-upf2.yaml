@@ -14,9 +14,9 @@ gtpu:
       type: N9
 dnnList:
   - dnn: internet
-    cidr: 10.62.0.0/24
+    cidr: 10.62.0.0/16
   - dnn: ims
-    cidr: 10.63.0.0/24
+    cidr: 10.63.0.0/16
 logger:
   enable: true
   level: info

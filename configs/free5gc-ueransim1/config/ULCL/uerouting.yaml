@@ -9,7 +9,7 @@ ueRoutingInfo:
       - A: gNB1
         B: UPF1
       - A: UPF1
-        B: UPF4
+        B: UPF5
     specificPath:
       - dest: 1.0.0.1/32
         path: [UPF1]
@@ -58,24 +58,24 @@ pfdDataForApp:
     pfds:
       - pfdID: pfd1
         flowDescriptions:
-          - permit out ip from 1.0.0.1/32 to 10.60.0.0/24
+          - permit out ip from 1.0.0.1/32 to 10.60.0.0/16
   - applicationId: app2
     pfds:
       - pfdID: pfd2
         flowDescriptions:
-          - permit out ip from 2.0.0.1/32 to 10.62.0.0/24
+          - permit out ip from 2.0.0.1/32 to 10.62.0.0/16
   - applicationId: app3
     pfds:
       - pfdID: pfd3
         flowDescriptions:
-          - permit out ip from 3.0.0.1/32 to 10.64.0.0/24
+          - permit out ip from 3.0.0.1/32 to 10.64.0.0/16
   - applicationId: app4
     pfds:
       - pfdID: pfd4
         flowDescriptions:
-          - permit out ip from 4.0.0.1/32 to 10.65.0.0/24
+          - permit out ip from 4.0.0.1/32 to 10.65.0.0/16
   - applicationId: enterprise_app
     pfds:
       - pfdID: pfd5
         flowDescriptions:
-          - permit out ip from 5.0.0.1/32 to 10.67.0.0/24
+          - permit out ip from 5.0.0.1/32 to 10.67.0.0/16

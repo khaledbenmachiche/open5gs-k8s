@@ -57,10 +57,10 @@ configuration:
             dnnUpfInfoList:
               - dnn: internet
                 pools:
-                  - cidr: 10.60.0.0/24
+                  - cidr: 10.60.0.0/16
               - dnn: ims
                 pools:
-                  - cidr: 10.61.0.0/24
+                  - cidr: 10.61.0.0/16
         interfaces:
           - interfaceType: N3
             endpoints:
@@ -84,10 +84,10 @@ configuration:
             dnnUpfInfoList:
               - dnn: internet
                 pools:
-                  - cidr: 10.62.0.0/24
+                  - cidr: 10.62.0.0/16
               - dnn: ims
                 pools:
-                  - cidr: 10.63.0.0/24
+                  - cidr: 10.63.0.0/16
         interfaces:
           - interfaceType: N3
             endpoints:
@@ -111,7 +111,7 @@ configuration:
             dnnUpfInfoList:
               - dnn: internet
                 pools:
-                  - cidr: 10.64.0.0/24
+                  - cidr: 10.64.0.0/16
         interfaces:
           - interfaceType: N3
             endpoints:
@@ -126,15 +126,15 @@ configuration:
               sst: 1
               sd: 010203
             dnnUpfInfoList:
-              - dnn: ims
+              - dnn: internet
                 pools:
-                  - cidr: 10.65.0.0/24
+                  - cidr: 10.65.0.0/16
         interfaces:
           - interfaceType: N9
             endpoints:
               - upf4.free5gc.org
             networkInstances:
-              - ims
+              - internet
       UPF5:
         type: UPF
         nodeID: upf5.free5gc.org
@@ -145,10 +145,10 @@ configuration:
             dnnUpfInfoList:
               - dnn: internet
                 pools:
-                  - cidr: 10.66.0.0/24
+                  - cidr: 10.66.0.0/16
               - dnn: enterprise
                 pools:
-                  - cidr: 10.67.0.0/24
+                  - cidr: 10.67.0.0/16
         interfaces:
           - interfaceType: N3
             endpoints:
@@ -169,9 +169,9 @@ configuration:
         B: UPF2
       - A: gNB1
         B: UPF3
-      - A: UPF1
-        B: UPF4
       - A: gNB1
+        B: UPF5
+      - A: UPF1
         B: UPF5
   t3591:
     enable: true
