@@ -1,0 +1,194 @@
+amf:
+  config:
+    guamiList: # Globally Unique AMF Identifier Il identifie de manière unique un AMF dans le monde. Il est utilisé par le gNB pour savoir à quel AMF s’attacher.
+    - amf_id: # amf de quel operateur et quel est son numero 
+        region: 2 # n'importe quel int pour differencier les amf 
+        set: 1 # groupe logique d'amf 
+      plmn_id: #  l'identifiant de l’opérateur.
+        mcc: '999'
+        mnc: '70'
+    plmnList: 
+    - plmn_id:
+        mcc: '999'
+        mnc: '70'
+      s_nssai: # Liste des Network Slices supportés par cet AMF pour ce PLMN.
+      - sd: '0x111111' # numero de slice dans ce type 
+        sst: 1 # type de slice  embb 
+      - sd: '0x222222'
+        sst: 2 # type de slice  urllc 
+      - sd: '0x333333'
+        sst: 3 # type de slice mmtc 
+    taiList: # Permet à l’AMF de savoir quelles zones géographiques il gère.
+    - plmn_id:
+        mcc: '999'
+        mnc: '70'
+      tac:
+      - 1
+      - 2
+      - 3
+  metrics:
+    enabled: true
+  nodeSelector:
+    role: control_plane
+ausf:
+  nodeSelector:
+    role: control_plane
+bsf:
+  nodeSelector:
+    role: control_plane
+hss:
+  enabled: false
+mme:
+  enabled: false
+mongodb:
+  livenessProbe:
+    initialDelaySeconds: 60
+    timeoutSeconds: 60
+  nodeSelector:
+    role: control_plane
+  readinessProbe:
+    initialDelaySeconds: 60
+    timeoutSeconds: 60
+  startupProbe:
+    initialDelaySeconds: 60
+    timeoutSeconds: 20
+nrf:
+  nodeSelector:
+    role: control_plane
+nssf:
+  nsiList:
+    - sd: '0x111111'
+      sst: 1
+      uri: ''
+    - sd: '0x222222'
+      sst: 2
+      uri: ''
+    - sd: '0x333333'
+      sst: 3
+      uri: ''
+    - sd: '0x444444'  # Ajout pour gnb4
+      sst: 4
+      uri: ''
+  nodeSelector:
+    role: control_plane
+pcf:
+  nodeSelector:
+    role: control_plane
+pcrf:
+  enabled: false
+populate:
+  enabled: true
+  initCommands:
+  # gnb1: 20 UEs (eMBB, sst: 1, sd: 0x111111)
+  - open5gs-dbctl add_ue_with_slice 999700000000001 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000002 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000003 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000004 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000005 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000006 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000007 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000008 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000009 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000010 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000011 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000012 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000013 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000014 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000015 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000016 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000017 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000018 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000019 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  - open5gs-dbctl add_ue_with_slice 999700000000020 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 1 111111
+  # gnb2: 20 UEs (URLLC, sst: 2, sd: 0x222222)
+  - open5gs-dbctl add_ue_with_slice 999700000000021 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000022 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000023 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000024 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000025 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000026 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000027 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000028 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000029 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000030 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000031 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000032 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000033 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000034 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000035 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000036 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000037 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000038 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000039 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  - open5gs-dbctl add_ue_with_slice 999700000000040 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 2 222222
+  # gnb3: 20 UEs (mMTC, sst: 3, sd: 0x333333)
+  - open5gs-dbctl add_ue_with_slice 999700000000041 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000042 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000043 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000044 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000045 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000046 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000047 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000048 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000049 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000050 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000051 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000052 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000053 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000054 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000055 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000056 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000057 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000058 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000059 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  - open5gs-dbctl add_ue_with_slice 999700000000060 465B5CE8B199B49FAA5F0A2EE238A6BC E8ED289DEBA952E4283B54E88E6183CA internet 3 333333
+  nodeSelector:
+    role: control_plane
+scp:
+  nodeSelector:
+    role: control_plane
+sgwc:
+  enabled: false
+sgwu:
+  enabled: false
+smf:
+  config:
+    pcrf:
+      enabled: false
+    upf:
+      pfcp:
+        hostnames:
+        - open5gs-upf1-pfcp
+        - open5gs-upf2-pfcp
+        - open5gs-upf3-pfcp
+        - open5gs-upf4-pfcp
+        - open5gs-upf5-pfcp
+        - open5gs-upf6-pfcp
+        - open5gs-upf7-pfcp
+        - open5gs-upf8-pfcp
+        - open5gs-upf9-pfcp
+        - open5gs-upf10-pfcp
+        - open5gs-upf11-pfcp
+        - open5gs-upf12-pfcp
+        - open5gs-upf13-pfcp
+        - open5gs-upf14-pfcp
+        - open5gs-upf15-pfcp
+  metrics:
+    enabled: true
+  nodeSelector:
+    role: control_plane
+udm:
+  nodeSelector:
+    role: control_plane
+udr:
+  nodeSelector:
+    role: control_plane
+upf:
+  enabled: false
+  nodeSelector:
+    role: data_plane
+webui:
+  ingress:
+    enabled: true
+  nodeSelector:
+    role: control_plane

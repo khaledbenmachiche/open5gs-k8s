@@ -5,7 +5,7 @@
   tasks:
     - name: Find UERANSIM gNB deployments
       ansible.builtin.find:
-        paths: "/vagrant/configs/open5gs-ueransim1"
+        paths: "/vagrant/configs/open5gs-ueransim3"
         patterns: "ueransim-gnb*.yaml"
       register: gnb_files
 
@@ -18,7 +18,7 @@
 
     - name: Find UPF deployments
       ansible.builtin.find:
-        paths: "/vagrant/configs/open5gs-ueransim1"
+        paths: "/vagrant/configs/open5gs-ueransim3"
         patterns: "upf[0-9]*-values.yaml"
       register: upf_files
 

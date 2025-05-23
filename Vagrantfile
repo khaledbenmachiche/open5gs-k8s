@@ -52,7 +52,7 @@ Vagrant.configure("2") do |config|
           echo "Final provisioning step on master node..."
           ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 \
           -i /vagrant/.vagrant/machines/master/virtualbox/private_key \
-          vagrant@#{MASTER_IPv4_ADDR} "ansible-playbook /vagrant/scripts/ansible/topologies/test/topology1_provision.yml && ansible-playbook /vagrant/scripts/ansible/setups/chaos_setup.yml"
+          vagrant@#{MASTER_IPv4_ADDR} "ansible-playbook /vagrant/scripts/ansible/topologies/test/topology1_provision.yml"
         SHELL
       end
 

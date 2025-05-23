@@ -4,7 +4,7 @@ config:
   logLevel: debug
   smf:
     pfcp:
-      hostname: "open5gs-upf1-pfcp"
+      hostname: "open5gs-upf7-pfcp"
       port: 8805
     address: "open5gs-smf-pfcp"
 

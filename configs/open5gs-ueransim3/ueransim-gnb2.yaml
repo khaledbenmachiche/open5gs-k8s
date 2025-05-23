@@ -16,8 +16,8 @@ ues:
       sd: '0x222222'
       sst: 2
     type: IPv4
-  count: 10
+  count: 20
   enabled: true
-  initialMSISDN: '0000000011'
+  initialMSISDN: '0000000021'
   nodeSelector:
     role: ueransim

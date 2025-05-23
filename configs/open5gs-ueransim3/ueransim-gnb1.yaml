@@ -16,7 +16,7 @@ ues:
       sd: '0x111111'
       sst: 1
     type: IPv4
-  count: 10
+  count: 20
   enabled: true
   initialMSISDN: '0000000001'
   nodeSelector:
