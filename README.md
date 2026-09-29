@@ -44,13 +44,25 @@ The initial provisioning happens automatically when you run `vagrant up`. It exe
 - Master node provisioning: `scripts/ansible/provisions/master_provision.yml`
 - Worker nodes provisioning: `scripts/ansible/provisions/worker_provision.yml`
 
+Once the last worker has joined, topology 1 is deployed automatically.
+
 ### Deploying Network Topologies
 
-To deploy a network topology (e.g., topology1):
+Three topologies are provided. Each one deploys the Open5GS core, a set of UPFs and three gNBs (one per network slice):
+
+| Topology | Config directory | UPFs | UEs per gNB | Total UEs |
+|----------|------------------|------|-------------|-----------|
+| topology1 | `configs/open5gs-ueransim1` | 3 | 10 | 30 |
+| topology2 | `configs/open5gs-ueransim2` | 7 | 10 | 30 |
+| topology3 | `configs/open5gs-ueransim3` | 15 | 20 | 60 |
+
+The three gNBs use the slices `sst=1 sd=0x111111` (eMBB), `sst=2 sd=0x222222` (URLLC) and `sst=3 sd=0x333333` (mMTC).
+
+To deploy a topology (e.g., topology1):
 
 ```sh
 cd /vagrant
-ansible-playbook scripts/ansible/topologies/test/topology1_provision.yml
+ansible-playbook scripts/ansible/topologies/topology1/topology1_provision.yml
 ```
 
 You can verify the deployment with:
@@ -67,7 +79,7 @@ To uninstall a deployed network topology:
 
 ```sh
 cd /vagrant
-ansible-playbook scripts/ansible/topologies/test/uninstall_topology1.yml
+ansible-playbook scripts/ansible/topologies/topology1/uninstall_topology1.yml
 ```
 
 For manual cleanup of individual components:
@@ -86,6 +98,14 @@ microk8s kubectl describe cm -n open5gs <config-name>
 
 ## Configuration
 
+Each topology is described by the files in its `configs/open5gs-ueransim*` directory:
+
+- `5gSA-values.yaml`: values for the umbrella `open5gs` chart (AMF PLMN/TAI/slice lists, SMF UPF list, subscribers provisioned in MongoDB via `populate.initCommands`, node placement)
+- `upfN-values.yaml`: values for each UPF release (`open5gs-upfN`)
+- `ueransim-gnbN.yaml`: values for each gNB release (`ueransim-gnbN`) and its UEs
+
+The helper scripts in `scripts/python/` generate these files: `upf_creation.py <num_upfs>` writes the UPF values and updates the SMF UPF list, and `gnbs_creation.py` writes the gNB values and the matching AMF/subscriber configuration. Run them from inside the target config directory.
+
 ## Testing and Validation
 
 ### Network Performance Testing
@@ -96,13 +116,13 @@ iperf3 -c 10.1.33.11 -B $(ip -4 addr show uesimtun0 | grep -oP '(?<=inet\s)\d+(\
 
 ### Checking gNodeB Logs
 ```sh
-kubectl -n open5gs logs deployment/ueransim-gnb
+microk8s kubectl -n open5gs logs deployment/ueransim-gnb1
 ```
 
 ### Accessing UE Terminals
-To enter UE terminal:
+To enter the UE terminal of a gNB:
 ```sh
-kubectl -n open5gs exec -ti deployment/ueransim-gnb-ues -- /bin/bash
+microk8s kubectl -n open5gs exec -ti deployment/ueransim-gnb1-ues -- /bin/bash
 ```
 Each UE has a tun interface. To test connectivity:
 ```sh
@@ -122,15 +142,22 @@ helm install -n open5gs ueransim-ues gradiant/ueransim-ues --set gnb.hostname=ue
 ## Network Testing Tools
 
 ### Interface Testing
-Using a specific list of interfaces:
+Start an iperf3 server on the master node:
 ```bash
-./iperf_multi_test.sh eth0,eth1,eth2
+./scripts/shell/iperf_server_script.sh [log_file]
 ```
 
-Using a number to auto-generate interface names:
+Then run iperf3 clients from the UEs, using a specific list of interfaces:
 ```bash
-./iperf_multi_test.sh 4  # Tests eth0, eth1, eth2, eth3
+./scripts/shell/iperf_ues_script.sh uesimtun0,uesimtun1,uesimtun2
 ```
+
+Or a number to auto-generate interface names:
+```bash
+./scripts/shell/iperf_ues_script.sh 4  # Tests uesimtun0 .. uesimtun3
+```
+
+The UE deployment defaults to `ueransim-gnb1-ues`; set `UES_DEPLOYMENT` to target another gNB's UEs.
 
 ## Network Chaos Testing
 
@@ -160,13 +187,13 @@ microk8s kubectl delete networkchaos upf-network-delay -n open5gs
 
 ## Monitoring
 
-### Grafana Setup
+### Prometheus & Grafana Setup
 ```sh
-microk8s helm upgrade --install grafana grafana/grafana \
-  --create-namespace \
-  --namespace monitoring \
-  --values /vagrant/configs/monitoring/grafana_values.yaml
+cd /vagrant
+ansible-playbook scripts/ansible/setups/monitoring_setup.yml
 ```
+
+This installs Prometheus (scraping the AMF, SMF, UPF and PCF metrics endpoints) and Grafana in the `monitoring` namespace, and port-forwards Grafana on port 3000 (forwarded to `localhost:8081` on the host by Vagrant) and Prometheus on port 9090.
 
 ### Accessing Grafana
 1. Forward the Grafana port:
@@ -182,7 +209,7 @@ kubectl --namespace monitoring port-forward $POD_NAME 3000
 microk8s kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 ```
 
-> **Note**: The default Grafana admin password is stored in `grafana_admin_password.txt` as a backup.
+> **Note**: The monitoring playbook also saves the Grafana admin password to `grafana_admin_password.txt` (git-ignored).
 
 ## Directory Structure
 
@@ -205,6 +232,10 @@ If you encounter issues:
 2. View pod logs: `microk8s kubectl logs -n open5gs <pod-name>`
 3. Check endpoints: `microk8s kubectl get endpoints -n open5gs`
 4. Examine service configuration: `microk8s kubectl describe svc -n open5gs <service-name>`
+
+## Acknowledgements
+
+The Helm charts in `charts/` are based on [Gradiant's 5g-charts](https://github.com/gradiant/5g-charts).
 
 ## License
 

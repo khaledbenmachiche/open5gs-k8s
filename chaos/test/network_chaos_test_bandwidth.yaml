@@ -4,7 +4,7 @@ metadata:
   name: upf-network-bandwidth
   namespace: open5gs
 spec:
-  action: loss
+  action: bandwidth
   mode: one
   selector:
     namespaces:

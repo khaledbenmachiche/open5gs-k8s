@@ -25,8 +25,8 @@ log "Interfaces to test: ${INTERFACES[*]}"
 
 for IFACE in "${INTERFACES[@]}"; do
     log "Running test on $IFACE"
-    bash /vagrant/shell/iperf_ue_script.sh "$IFACE" &
-    log "Test completed for $IFACE"
+    bash "$(dirname "$0")/iperf_ue_script.sh" "$IFACE" &
 done
 
+wait
 log "All iperf tests have been executed."

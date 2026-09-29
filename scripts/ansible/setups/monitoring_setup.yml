@@ -15,12 +15,12 @@
 
     # Install Prometheus using the Helm chart
     - name: Install Prometheus
-      command: microk8s helm upgrade --install prometheus prometheus-community/prometheus \
-        --create-namespace \
-        --namespace monitoring \
+      command: >
+        microk8s helm upgrade --install prometheus prometheus-community/prometheus
+        --create-namespace
+        --namespace monitoring
         --values /vagrant/configs/monitoring/prometheus_values.yaml
       register: prometheus_install
-      failed_when: false
 
     # Add the Grafana Helm chart repo
     - name: Add Grafana Helm chart repo
@@ -35,12 +35,12 @@
 
     # Install Grafana using the Helm chart
     - name: Install Grafana
-      command: microk8s helm upgrade --install grafana grafana/grafana \
-        --create-namespace \
-        --namespace monitoring \
+      command: >
+        microk8s helm upgrade --install grafana grafana/grafana
+        --create-namespace
+        --namespace monitoring
         --values /vagrant/configs/monitoring/grafana_values.yaml
       register: grafana_install
-      failed_when: false
 
     # Wait for Grafana pod to be ready
     - name: Wait for Grafana pod to be ready

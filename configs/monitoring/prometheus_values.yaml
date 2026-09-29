@@ -1,11 +1,15 @@
-scrape_configs:
+extraScrapeConfigs: |
   - job_name: "open5gs"
     kubernetes_sd_configs:
       - role: pod
+        namespaces:
+          names: [open5gs]
     relabel_configs:
-      - source_labels: [__meta_kubernetes_pod_label_app]
+      - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
         action: keep
-        regex: open5gs
+        regex: open5gs-(amf|smf|upf|pcf)
       - source_labels: [__meta_kubernetes_pod_ip]
         target_label: __address__
         replacement: ${1}:9090
+      - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_instance]
+        target_label: instance

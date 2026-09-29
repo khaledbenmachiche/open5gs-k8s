@@ -1,13 +1,13 @@
 amf:
   hostname: open5gs-amf-ngap
-mcc: '999' # mobile country code 
-mnc: '70'   # mobile network code 
+mcc: '999' # mobile country code
+mnc: '70'   # mobile network code
 name: ueransim-gnb1
-nodeSelector: # which node kuberentes the gnb will be deployed 
+nodeSelector: # Kubernetes node the gNB is scheduled on
   role: ueransim
-sd: '0x111111' # slicing 
-sst: 1 # slicing 
-tac: '0001' # tracking area code utilise pour reperer le user equipement a quel gnb est attache 
+sd: '0x111111' # slicing
+sst: 1 # slicing
+tac: '0001' # tracking area code, identifies which gNB area the UE is attached to
 ues:
   apnList:
   - apn: internet

@@ -3,3 +3,4 @@
 .ropeproject
 reports/
 outputs/*
+grafana_admin_password.txt
